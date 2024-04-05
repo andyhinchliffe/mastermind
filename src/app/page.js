@@ -113,7 +113,7 @@ const handleChangeTopic = (event) => {
         // console.log(data);
         console.log(data.choices[0].message.content);
         const quizArray = JSON.parse(data.choices[0].message.content);
-        // console.log(typeof quizArray)
+        setIsLoadingChatGPT(false)
 
         setQuestionState(quizArray)
         // setIsLoadingChatGPT(false)
