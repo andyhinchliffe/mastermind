@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState } from 'react';
+import { Puff } from 'react-loader-spinner';
+
 
 export default function App() {
 	const questions = [
@@ -48,6 +50,7 @@ export default function App() {
   const [questionState, setQuestionState] = useState(questions);
   const [topic, setTopic] = useState('');
   const [isLoadingChatGPT, setIsLoadingChatGPT] = useState(false)
+  const [hasTopic , setHasTopic] = useState(false) 
   const apiKey = process.env.NEXT_PUBLIC_CHATGPT_API_KEY;
 
   const url = 'https://api.openai.com/v1/chat/completions';
@@ -61,6 +64,7 @@ export default function App() {
 
 const handleChangeTopic = (event) => {
   setTopic(event.target.value);
+  setHasTopic(true)
 }
 
 	const handleAnswerOptionClick = (isCorrect) => {
@@ -75,6 +79,13 @@ const handleChangeTopic = (event) => {
 			setShowScore(true);
 		}
 	};
+
+	const handleReset = () => {
+		setCurrentQuestion(0);
+		setShowScore(false);
+		setScore(0);
+		setHasTopic(false)
+	}
   
 
   
@@ -119,7 +130,9 @@ const questionsString = JSON.stringify(questions);
     const ChatGPTquestion = "write 10 easy questions about " + topic + " in the format of " + questionsString;
 
 	return (
-    <div className="mx-auto p-4 w-72 bg-white rounded-xl ">
+		<div >
+		<div  className="h-screen pt-4"style={{ backgroundImage: "url(/y-so-serious.png)" }}>
+    <div className="mx-auto  p-4 w-72 bg-slate-100 rounded-xl ">
 		<div className='app'>
 			{showScore ? (
 				<div className='score-section'>
@@ -129,10 +142,12 @@ const questionsString = JSON.stringify(questions);
 				<>
 					<div className='question-section'>
 						<div className='question-count'>
-							<span>Question {currentQuestion + 1}</span>/{questions.length}
+						<h1 className="text-lg text-center font-semibold">Mastermind</h1>
+						<p className='text-sm text-center'>Answer a question or choose a topic</p>
+							<span className='text-xs text-center'>Question {currentQuestion + 1}</span>/{questions.length}
 						</div>
-            <div>Topic {topic}</div>
-						<div className='question-text'>{questionState[currentQuestion].questionText}</div>
+            {hasTopic ? ( <p>Topic {topic}</p> ): null}
+						<div className='mt-4 font-bold question-text'>{questionState[currentQuestion].questionText}</div>
 					</div>
 					<div className='answer-section p-4 '>
 						{questionState[currentQuestion].answerOptions.map((answerOption) => (
@@ -142,18 +157,35 @@ const questionsString = JSON.stringify(questions);
 				</>
 			)}
 		</div>
-    <div className=" p-4">
+    <div className="p-4">
                             <p className=" text-sm md:text-lg mb-2">Enter your topic</p>
-                            <form onSubmit={handleSubmitTopic}>
-                                {/* {isLoadingChatGPT ? <Spinner></Spinner> : null} */}
+							
+							<div className="ml-20">{isLoadingChatGPT ? <Puff
+  											visible={true}
+  											height="40"
+  											width="40"
+  											color="#4fa94d"
+  											ariaLabel="puff-loading"
+  											wrapperStyle={{}}
+  											wrapperClass=""
+  											/> : null}</div>
+							<form onSubmit={handleSubmitTopic}>
+                                
                                 
                                 <label>
-                                    {/* Topic: */}
-                                    <input placeholder="Topic" className="bg-white border w-full mb-2 border-slate-300 hover:bg-slate-300 text-slate-500s font-base py-2 px-4 rounded-full" type="text" value={topic} onChange={handleChangeTopic} />
+                                    
+                                    <input placeholder="Topic" className="mt-4 bg-white border w-full mb-2 border-slate-300 hover:bg-slate-300 text-slate-500s font-base py-2 px-4 rounded-full" type="text" value={topic} onChange={handleChangeTopic} />
                                 </label>
                                 <input className="bg-transparent border w-full border-slate-300 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-full" type="submit" value="Generate" />
                             </form>
+							
                         </div>
+						<button className=" text-slate-400 text-xs" onClick={handleReset}>Reset</button>
+						<div >
+     
     </div>
+    </div>
+	</div>
+	</div>
 	);
 }
